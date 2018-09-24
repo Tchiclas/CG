@@ -2,9 +2,7 @@
 
 
 /*A mesa ja esta feita 
-
 ainda tem coisas do lab1 que nao sao precisas mas nao quero mudar
-
 Ok! Assinado Rita
 */
 
@@ -12,13 +10,62 @@ var camera, scene, renderer;
 
 var geometry, material, mesh;
 
-var ball;
+
+
+/*----------LAMP-----------------------*/
+
+function addLampTop(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.ConeGeometry(4, 8, 32);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y+4, z);
+    mesh.rotation.x = Math.PI;
+    obj.add(mesh);
+}
+
+
+function addLampBase(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.CylinderGeometry(5, 5, 2, 32);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addLampStand(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.CylinderGeometry(0.5, 0.5, 24, 22);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y+12, z);
+    obj.add(mesh);
+}
+
+function createLamp(x, y, z) {
+    'use strict';
+    
+    var lamp = new THREE.Object3D();
+    
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+   
+    addLampBase(lamp,0,0,0);
+    addLampStand(lamp,0,1,0);
+    addLampTop(lamp,0,24,0);
+    
+    scene.add(lamp);
+    
+    lamp.position.x = x;
+    lamp.position.y = y;
+    lamp.position.z = z;
+}
+
+/*----------LAMP-----------------------*/
+
 /*----------TABLE-----------------------*/
 function addTableLeg(obj, x, y, z) {
     'use strict';
     geometry = new THREE.CylinderGeometry(2, 2, 16, 32);
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y - 8, z);
+    mesh.position.set(x, y - 9, z);
     obj.add(mesh);
 }
 
@@ -79,9 +126,9 @@ function addChairBack(obj, x, y, z) {
 
 function addChairWheels(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.TorusGeometry(1, 1, 11, 32);
+    geometry = new THREE.TorusGeometry(1, 1, 11, 22);
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y-13, z);
+    mesh.position.set(x, y-12, z);
     mesh.rotation.y = Math.PI / 2;
     obj.add(mesh);
 }
@@ -113,21 +160,6 @@ function createChair(x, y, z) {
 
 /*----------CHAIR-----------------------*/
 
-function createBall(x, y, z) {
-    'use strict';
-    
-    ball = new THREE.Object3D();
-    ball.userData = { jumping: true, step: 0 };
-    
-    material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-    geometry = new THREE.SphereGeometry(4, 10, 10);
-    mesh = new THREE.Mesh(geometry, material);
-    
-    ball.add(mesh);
-    ball.position.set(x, y, z);
-    
-    scene.add(ball);
-}
 
 
 
@@ -140,9 +172,9 @@ function createScene() {
 
     scene.add(new THREE.AxisHelper(10));
     
-    createTable(0, 8, 0);
-    //createBall(0, 0, 15);
-    createChair(0,2,15);
+    createTable(0, 17, 0);
+    createChair(0,14,15);
+    createLamp(40,1,0);
 }
 
 function createCamera() {
@@ -151,8 +183,8 @@ function createCamera() {
                                          window.innerWidth / window.innerHeight,
                                          1,
                                          1000);
-    camera.position.x = 50;
-    camera.position.y = -10;
+    camera.position.x = 0;
+    camera.position.y = 100;
     camera.position.z = 0;
     camera.lookAt(scene.position);
 }
@@ -166,6 +198,8 @@ function onResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
     }
+
+    render();
 
 }
 
@@ -181,10 +215,6 @@ function onKeyDown(e) {
             }
         });
         break;
-    case 83:  //S
-    case 115: //s
-        //ball.userData.jumping = !ball.userData.jumping;
-        break;
     case 69:  //E
     case 101: //e
         scene.traverse(function (node) {
@@ -193,7 +223,28 @@ function onKeyDown(e) {
             }
         });
         break;
+    case 49:    //1
+        camera.position.x = 0;
+        camera.position.y = 100;
+        camera.position.z = 0;
+        camera.lookAt(scene.position);
+        break;
+    case 50:    //2
+        camera.position.x = 100;
+        camera.position.y = 0;
+        camera.position.z = 0;
+        camera.lookAt(scene.position);
+        break;
+    case 51:    //3
+        camera.position.x = 0;
+        camera.position.y = 0;
+        camera.position.z = 100;
+        camera.lookAt(scene.position);
+        break;
     }
+    
+
+    render();
 }
 
 function render() {
@@ -230,4 +281,3 @@ function animate() {
     
     requestAnimationFrame(animate);
 }
-
