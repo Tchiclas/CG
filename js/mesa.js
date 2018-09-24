@@ -4,6 +4,8 @@
 /*A mesa ja esta feita 
 
 ainda tem coisas do lab1 que nao sao precisas mas nao quero mudar
+
+Ok! Assinado Rita
 */
 
 var camera, scene, renderer;
