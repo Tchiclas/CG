@@ -4,11 +4,29 @@
 /*A mesa ja esta feita 
 ainda tem coisas do lab1 que nao sao precisas mas nao quero mudar
 Ok! Assinado Rita
+ahahaha este dialogo e incrivel
 */
 
 var camera, scene, renderer;
 
 var geometry, material, mesh;
+
+var chair, table, lamp, chair_wheels, wheelless_chair;
+
+
+var clock = new THREE.Clock();
+
+
+//control flags
+var controlUp = false;
+var controlDown = false;
+var breakU = false;
+var breakD = false;
+
+var StartRotL = false;
+var StartRotR = false;
+var StopRotL = false;
+var StopRotR = false;
 
 
 
@@ -43,13 +61,15 @@ function addLampStand(obj, x, y, z) {
 function createLamp(x, y, z) {
     'use strict';
     
-    var lamp = new THREE.Object3D();
+    lamp = new THREE.Object3D();
     
     material = new THREE.MeshBasicMaterial({ color: 0xD60F0F, wireframe: true });
    
     addLampBase(lamp,0,0,0);
     addLampStand(lamp,0,1,0);
     addLampTop(lamp,0,24,0);
+
+    lamp.name = "lamp";
     
     scene.add(lamp);
     
@@ -80,7 +100,7 @@ function addTableTop(obj, x, y, z) {
 function createTable(x, y, z) {
     'use strict';
     
-    var table = new THREE.Object3D();
+    table = new THREE.Object3D();
     
     material = new THREE.MeshBasicMaterial({ color: 0xFF3BDB, wireframe: true });
    
@@ -88,9 +108,9 @@ function createTable(x, y, z) {
     addTableLeg(table, -25, 0, -8);
     addTableLeg(table, -25, 0, 8);
     addTableLeg(table, 25, 0, 8);
-    addTableLeg(table, 25, 0, 8);
     addTableLeg(table, 25, 0, -8);
 
+    table.name = "table";
     scene.add(table);
     
     table.position.x = x;
@@ -162,24 +182,41 @@ function addChairWheels(obj, x, y, z) {
 function createChair(x, y, z) {
     'use strict';
     
-    var chair = new THREE.Object3D();
+    chair = new THREE.Object3D();
+    wheelless_chair = new THREE.Object3D();
+    chair_wheels = new THREE.Object3D();
+
+
+    var topChairAxis = new THREE.AxisHelper();
+    wheelless_chair.add(topChairAxis);
+    chair_wheels.add(new THREE.AxisHelper());
+    chair.add(topChairAxis);
+
+    chair.userData = {velocity: 0 }; //Aceleration is considered 1 or -1 depending on direction.
     
     material = new THREE.MeshBasicMaterial({ color: 0xdd6107, wireframe: true });
    
-    addChairSeat(chair, 0, 0, 0);
-    addChairMasterLeg(chair, 0, 0, 0);
-    addChairLeg(chair,5,0,5);
-    addChairLeg(chair, -5, 0, 5);
-    addChairLeg(chair, -5, 0, -5);
-    addChairLeg(chair,5,0,-5);
-    addChairWheels(chair, 5, 0, 5);
-    addChairWheels(chair, -5, 0, 5);
-    addChairWheels(chair, -5, 0, -5);
-    addChairWheels(chair, 5, 0, -5);
-    addChairBack(chair, 0, 5, 5);
-    addChairBase(chair,0,0,0);
-    addChairArm(chair, 5, 0, 5);
-    addChairArm(chair, -5, 0, 5);
+    addChairSeat(wheelless_chair, 0, 0, 0);
+    addChairMasterLeg(wheelless_chair, 0, 0, 0);
+    addChairLeg(wheelless_chair,5,0,5);
+    addChairLeg(wheelless_chair, -5, 0, 5);
+    addChairLeg(wheelless_chair, -5, 0, -5);
+    addChairLeg(wheelless_chair,5,0,-5);
+    addChairBack(wheelless_chair, 0, 5, 5);
+    addChairBase(wheelless_chair,0,0,0);
+    addChairArm(wheelless_chair, 5, 0, 5);
+    addChairArm(wheelless_chair, -5, 0, 5);
+    addChairArm(wheelless_chair, -5, 0, 5);
+    addChairWheels(chair_wheels, 5, 0, 5);
+    addChairWheels(chair_wheels, -5, 0, 5);
+    addChairWheels(chair_wheels, -5, 0, -5);
+    addChairWheels(chair_wheels, 5, 0, -5);
+
+    chair.add(wheelless_chair);
+    chair.add(chair_wheels);
+
+
+    chair.name = "chair";
 
     scene.add(chair);
     
@@ -205,13 +242,13 @@ function createScene() {
 
 function createCamera() {
     'use strict';
-    camera = new THREE.PerspectiveCamera(70,
-                                         window.innerWidth / window.innerHeight,
-                                         1,
-                                         1000);
-    camera.position.x = -60;
-    camera.position.y = 30;
-    camera.position.z = -90;
+    var viewSize = 100;
+    var aspectRatio = window.innerWidth / window.innerHeight;
+
+    camera = new THREE.OrthographicCamera(-aspectRatio*viewSize/2, aspectRatio*viewSize/2,viewSize/2,-viewSize/2, -1000,1000);
+    camera.position.x = 0;
+    camera.position.y = 90;
+    camera.position.z = 0;
     camera.lookAt(scene.position);
 }
 
@@ -235,42 +272,153 @@ function onKeyDown(e) {
     switch (e.keyCode) {
     case 65: //A
     case 97: //a
-        scene.traverse(function (node) {
-            if (node instanceof THREE.Mesh) {
-                node.material.wireframe = !node.material.wireframe;
+    //para debug
+        scene.traverse( function ( obj ) {
+            var s = '|___';
+            var obj2 = obj;
+            while ( obj2 !== scene ) {
+                s = '\t' + s;
+                obj2 = obj2.parent;
             }
-        });
-        break;
-    case 69:  //E
-    case 101: //e
-        scene.traverse(function (node) {
-            if (node instanceof THREE.AxisHelper) {
-                node.visible = !node.visible;
-            }
-        });
+            console.log( s + obj.name + ' <' + obj.type + '>' );
+            if(obj instanceof THREE.Mesh){
+                obj.material.wireframe = !obj.material.wireframe;
+            }            
+
+        } );
         break;
     case 49:    //1
-        camera.position.x = -60;
-        camera.position.y = 30;
-        camera.position.z = -90;
+        camera.position.x = 0;
+        camera.position.y = 90;
+        camera.position.z = 0;
         camera.lookAt(scene.position);
         break;
     case 50:    //2
-        camera.position.x = 60;
-        camera.position.y = 90;
-        camera.position.z = 30;
+        camera.position.x = 90;
+        camera.position.y = 0;
+        camera.position.z = 0;
         camera.lookAt(scene.position);
         break;
     case 51:    //3
-        camera.position.x = 60;
-        camera.position.y = 30;
+        camera.position.x = 0;
+        camera.position.y = 0;
         camera.position.z = 90;
         camera.lookAt(scene.position);
+        break;
+    case 38: //UP
+        breakU = false;
+        breakD = false;
+        controlUp = true;
+        break;
+    case 40: //DOWN
+        breakD = false;
+        breakU = false;
+        controlDown = true;
+        break;
+    case 37://LEFT
+        StopRotL = false;
+        StopRotR = false;
+        StartRotL = true;
+        break;
+    case 39://RIGHT
+        StopRotL = false;
+        StopRotR = false;
+        StartRotR = true;
         break;
     }
     
     render();
 }
+
+function onKeyUp(e){
+    //Mainly used for movement breaks for now
+    switch (e.keyCode){
+        case 38://UP
+            controlUp = false;
+            breakU = true;
+            break;
+        case 40://DOWN
+            controlDown = false;
+            breakD = true;
+            break;
+        
+        case 37://LEFT
+            StartRotL = false;
+            StopRotL = true;
+            break;
+        case 39://RIGHT
+            StartRotR = false;
+            StopRotR = true;
+            break;
+
+    }
+}
+
+/*Movement Functions*/
+function moveDown(max, delta){
+        if(chair.userData.velocity < max){
+            chair.userData.velocity += delta;
+        }
+        else{
+            chair.userData.velocity = max;
+        }
+}
+
+function moveUp(max, delta){
+        if(chair.userData.velocity > -max){
+            chair.userData.velocity -= delta;
+        }
+        else {
+            chair.userData.velocity = -max;
+        }
+        
+}
+
+function rotateRight(){
+
+    chair.rotation.y -= Math.PI / 2;
+    chair_wheels.rotation.y += Math.PI / 2;
+    StartRotR = false;
+}
+
+function rotateLeft(){
+    chair.rotation.y += Math.PI / 2;
+    chair_wheels.rotation.y -= Math.PI / 2;
+    StartRotL = false;
+}
+
+
+
+function checkMove(){
+    
+    var delta = clock.getDelta();
+
+    if(controlUp){
+        moveUp(2, delta);
+
+    }
+    else if(controlDown){
+        moveDown(2, delta);
+    }
+   
+    else if(breakU){            
+        moveDown(0, delta);
+    }
+    else if(breakD){
+        moveUp(0, delta);
+    }
+    if(StartRotL){
+        rotateLeft();
+    }
+    if(StartRotR){
+        rotateRight();
+    }
+  
+  
+    chair.translateZ(chair.userData.velocity);
+
+}
+
 
 function render() {
     'use strict';
@@ -292,10 +440,13 @@ function init() {
     
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", onResize);
+    window.addEventListener("keyup", onKeyUp);
 }
 
 function animate() {
     'use strict';
+
+    checkMove();
     
     render();
     
