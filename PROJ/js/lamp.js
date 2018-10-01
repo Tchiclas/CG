@@ -9,7 +9,6 @@ function addLampTop(obj, x, y, z) {
     obj.add(mesh);
 }
 
-
 function addLampBase(obj, x, y, z) {
     'use strict';
     geometry = new THREE.CylinderGeometry(5, 5, 2, 32);
@@ -26,6 +25,25 @@ function addLampStand(obj, x, y, z) {
     obj.add(mesh);
 }
 
+function addLampLightBulb(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.SphereGeometry(2, 22, 22, 0, Math.PI);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y+4, z);
+    mesh.rotation.x = 3*Math.PI / 2;
+    obj.add(mesh);
+}
+
+function addLampLightBulbBase(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.ConeGeometry(2, 4, 22);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y+2, z);
+    mesh.rotation.x = Math.PI;
+    obj.add(mesh);
+}
+
+
 function createLamp(x, y, z) {
     'use strict';
     
@@ -36,6 +54,8 @@ function createLamp(x, y, z) {
     addLampBase(lamp,0,0,0);
     addLampStand(lamp,0,1,0);
     addLampTop(lamp,0,24,0);
+    addLampLightBulbBase(lamp,0,24,0);
+    addLampLightBulb(lamp,0,24,0);
 
     lamp.name = "lamp";
     
@@ -45,5 +65,6 @@ function createLamp(x, y, z) {
     lamp.position.y = y;
     lamp.position.z = z;
 }
+
 
 /*----------LAMP-----------------------*/
