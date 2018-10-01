@@ -2,7 +2,7 @@
 /*----------TABLE-----------------------*/
 function addTableLeg(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.CylinderGeometry(1, 2, 16, 32);
+    geometry = new THREE.CylinderGeometry(2, 2, 16, 32);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y - 9, z);
     obj.add(mesh);
