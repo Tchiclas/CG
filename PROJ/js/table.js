@@ -35,5 +35,13 @@ function createTable(x, y, z) {
     table.position.x = x;
     table.position.y = y;
     table.position.z = z;
+    return table;
 }
 /*----------TABLE-----------------------*/
+
+
+class Table{
+    constructor(x,y,z){
+        this.lamp = createTable(x,y,z);
+    }
+}

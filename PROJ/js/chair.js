@@ -60,7 +60,7 @@ function addChairWheels(obj, x, y, z) {
 
 function createChair(x, y, z) {
     'use strict';
-    
+    var wheelless_chair,chair_wheels;
     chair = new THREE.Object3D();
     wheelless_chair = new THREE.Object3D();
     chair_wheels = new THREE.Object3D();
@@ -98,6 +98,59 @@ function createChair(x, y, z) {
     chair.position.x = x;
     chair.position.y = y;
     chair.position.z = z;
+    return chair;
 }
 
 /*----------CHAIR-----------------------*/
+
+class Chair{
+    constructor(x,y,z){
+        this.chair = createChair(x,y,z);
+    }
+
+        /*Movement Functions*/
+    moveUp(max, delta){
+        if(this.chair.userData.velocity > -max){
+            this.chair.userData.velocity -= delta;
+        }
+        else {
+            this.chair.userData.velocity = -max;
+        }
+    }
+
+    moveDown(max, delta){
+        if(this.chair.userData.velocity < max){
+            this.chair.userData.velocity += delta;
+        }
+        else{
+            this.chair.userData.velocity = max;
+        }
+    }
+
+    rotateRight(max,delta){
+
+        if(this.chair.userData.rotvelocity > -max){
+            this.chair.userData.rotvelocity  -= delta;
+        }
+        else {
+            this.chair.userData.rotvelocity  = -max;
+        }
+    }
+
+    rotateLeft(max,delta){
+        if(this.chair.userData.rotvelocity < max){
+            this.chair.userData.rotvelocity  += delta;
+        }
+        else {
+            this.chair.userData.rotvelocity  = max;
+        }
+    }
+
+    Move(){
+        this.chair.translateZ(this.chair.userData.velocity);
+    }
+
+    Rotate(){
+        this.chair.rotation.y += this.chair.userData.rotvelocity;
+    }
+}

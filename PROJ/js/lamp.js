@@ -68,3 +68,10 @@ function createLamp(x, y, z) {
 
 
 /*----------LAMP-----------------------*/
+
+
+class Lamp{
+    constructor(x,y,z){
+        this.lamp = createLamp(x,y,z);
+    }
+}

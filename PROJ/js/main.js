@@ -11,7 +11,7 @@ var camera, scene, renderer;
 
 var geometry, material, mesh;
 
-var chair, table, lamp, chair_wheels, wheelless_chair;
+var chair, table, lamp;
 var topChairAxis = new THREE.AxisHelper();
 
 var clock = new THREE.Clock();
@@ -37,9 +37,9 @@ function createScene() {
 
     scene.add(new THREE.AxisHelper());
     
-    createTable(0, 17, 0);
-    createChair(0,14,15);
-    createLamp(40,1,0);
+    table = new Table(0, 17, 0);
+    chair = new Chair(0,14,15);
+    lamp = new Lamp(40,1,0);
 }
 
 function createCamera() {
@@ -164,80 +164,41 @@ function onKeyUp(e){
     }
 }
 
-/*Movement Functions*/
-function moveUp(max, delta){
-    if(chair.userData.velocity > -max){
-        chair.userData.velocity -= delta;
-    }
-    else {
-        chair.userData.velocity = -max;
-    }
-    
-}
-function moveDown(max, delta){
-    if(chair.userData.velocity < max){
-        chair.userData.velocity += delta;
-    }
-    else{
-        chair.userData.velocity = max;
-    }
-  
-}
 
-function rotateRight(max,delta){
-
-    if(chair.userData.rotvelocity > -max){
-        chair.userData.rotvelocity  -= delta;
-    }
-    else {
-        chair.userData.rotvelocity  = -max;
-    }
-
-}
-
-function rotateLeft(max,delta){
-    if(chair.userData.rotvelocity < max){
-        chair.userData.rotvelocity  += delta;
-    }
-    else {
-        chair.userData.rotvelocity  = max;
-    }
-   
-}
 
 function checkMove(){
     
     var delta = clock.getDelta();
 
     if(controlUp){
-        moveUp(1, delta);
+        chair.moveUp(1, delta);
     }
     else if(controlDown){
-        moveDown(1, delta);
+        chair.moveDown(1, delta);
     }
    
     else if(breakU){            
-        moveDown(0, delta);
+        chair.moveDown(0, delta);
     }
     else if(breakD){
-        moveUp(0, delta);
+        chair.moveUp(0, delta);
     }
     if(StartRotL){
-        rotateLeft(0.1,delta);
+        chair.rotateLeft(0.1,delta);
     }
     else if(StartRotR){
-        rotateRight(0.1,delta);
+        chair.rotateRight(0.1,delta);
     }
     else if(StopRotL){
-        rotateLeft(0,delta);
+        chair.rotateLeft(0,delta);
     }
     else if (StopRotR){
-        rotateRight(0,delta);
+        chair.rotateRight(0,delta);
     }
   
   
-    chair.translateZ(chair.userData.velocity);
-    chair.rotation.y += chair.userData.rotvelocity;
+    chair.Move()
+    chair.Rotate()
 
 }
 
