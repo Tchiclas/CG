@@ -99,7 +99,7 @@ function addChairBase(obj, x, y, z) {
 function addChairArm(obj, x, y, z) {
     'use strict';
     geometry = new THREE.BoxGeometry(1.5, 1.5, 12);
-    material = new THREE.MeshBasicMaterial({ color: 0x235881, wireframe: true });
+    material = new THREE.MeshBasicMaterial({ color: 0xeeeeee, wireframe: true });
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y+4, z-5);
     obj.add(mesh);
