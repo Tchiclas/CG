@@ -61,7 +61,7 @@ class Chair extends THREE.Object3D{
 
     Move(){
         this.translateZ(this.userData.velocity);
-         if (rotated && this.userData.velocity != 0){
+         if (rotated && this.userData.velocity != 0 && (StopRotL || StopRotR)){
             this.chair_wheels.lookAt(topChairAxis); 
             rotated = false;
         } 
