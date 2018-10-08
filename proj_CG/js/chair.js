@@ -61,6 +61,11 @@ class Chair extends THREE.Object3D{
 
     Move(){
         this.translateZ(this.userData.velocity);
+        this.chair_wheels.children[0].rotation.z += this.userData.velocity;
+        this.chair_wheels.children[1].rotation.z += this.userData.velocity;
+        this.chair_wheels.children[2].rotation.z += this.userData.velocity;
+        this.chair_wheels.children[3].rotation.z += this.userData.velocity;
+        
          if (rotated && this.userData.velocity != 0 && (StopRotL || StopRotR)){
             this.chair_wheels.lookAt(topChairAxis); 
             rotated = false;
@@ -140,6 +145,7 @@ function addChairWheels(obj, x, y, z) {
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y-12, z);
     mesh.rotation.y = Math.PI / 2;
+    
     obj.add(mesh);
 }
 function createWheellessChair(){
@@ -149,12 +155,10 @@ function createWheellessChair(){
     wheelless_chair = new THREE.Object3D();
     wheelless_chair.userData = {rotvelocity:0};
     
+    
     addChairSeat(wheelless_chair, 0, 0, 0);
-    addChairMasterLeg(wheelless_chair, 0, 0, 0);
     addChairBack(wheelless_chair, 0, 5, 5);
-    addChairBase(wheelless_chair,0,0,0);
     addChairArm(wheelless_chair, 5, 0, 5);
-    addChairArm(wheelless_chair, -5, 0, 5);
     addChairArm(wheelless_chair, -5, 0, 5);
 
     return wheelless_chair;
@@ -173,6 +177,9 @@ function createChairWheels(){
     addChairLeg(chair_wheels, -5, 0, 5);
     addChairLeg(chair_wheels, -5, 0, -5);
     addChairLeg(chair_wheels,5,0,-5);
+    addChairBase(chair_wheels,0,0,0);
+    addChairMasterLeg(chair_wheels, 0, 0, 0);
+       
 
     return chair_wheels;
 }
