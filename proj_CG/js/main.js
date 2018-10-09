@@ -42,8 +42,8 @@ function createScene() {
 
 function createCamera() {
     'use strict';
-    var viewSize = 100;
-    var aspectRatio = window.innerWidth / window.innerHeight;
+    let viewSize = 100;
+    let aspectRatio = window.innerWidth / window.innerHeight;
 
     camera = new THREE.OrthographicCamera(-aspectRatio*viewSize/2, aspectRatio*viewSize/2,viewSize/2,-viewSize/2, -1000,1000);
     camera.position.x = 0;
@@ -54,15 +54,18 @@ function createCamera() {
 
 function onResize() {
     'use strict';
+    let viewSize = 100;
+    let aspectRatio = window.innerWidth / window.innerHeight;
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     
-    if (window.innerHeight > 0 && window.innerWidth > 0) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-    }
-
+    camera.left = -aspectRatio*viewSize/2;
+    camera.right = aspectRatio*viewSize/2;
+    camera.top = viewSize/2;
+    camera.bottom = -viewSize/2
+    camera.updateProjectionMatrix();
     render();
+
 
 }
 
