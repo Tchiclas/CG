@@ -1,4 +1,4 @@
-var camera, scene, renderer;
+var camera1, camera2, camera3, scene, renderer;
 
 var geometry, material, mesh;
 
@@ -7,6 +7,10 @@ var chair, table, lamp;
 var topChairAxis = new THREE.AxisHelper();
 
 var clock = new THREE.Clock();
+
+var frustumSize = 100;
+
+var cameraNumber = 1;
 
 //control flags
 var controlUp = false;
@@ -40,32 +44,82 @@ function createScene() {
     scene.add(lamp);
 }
 
-function createCamera() {
+function createCameras() {
     'use strict';
-    let viewSize = 100;
-    let aspectRatio = window.innerWidth / window.innerHeight;
+    //let viewSize = 100;
+    //let aspectRatio = window.innerWidth / window.innerHeight;
 
-    camera = new THREE.OrthographicCamera(-aspectRatio*viewSize/2, aspectRatio*viewSize/2,viewSize/2,-viewSize/2, -1000,1000);
-    camera.position.x = 0;
-    camera.position.y = 90;
-    camera.position.z = 0;
-    camera.lookAt(scene.position);
+    //camera = new THREE.OrthographicCamera(-aspectRatio*viewSize/2, aspectRatio*viewSize/2,viewSize/2,-viewSize/2, -1000,1000);
+    
+    var aspect = window.innerWidth / window.innerHeight;
+    
+    camera1 = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 100 );
+
+    camera1.position.x = 0;
+    camera1.position.y = 90;
+    camera1.position.z = 0;
+    camera1.lookAt(scene.position);
+
+    camera1.updateProjectionMatrix();
+
+    camera2 = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 100 );
+
+    camera2.position.x = 90;
+    camera2.position.y = 0;
+    camera2.position.z = 0;
+    camera2.lookAt(scene.position);
+
+    camera2.updateProjectionMatrix();
+
+    camera3 = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 100 );
+
+    camera3.position.x = 0;
+    camera3.position.y = 0;
+    camera3.position.z = 90;
+    camera3.lookAt(scene.position);
+
+    camera3.updateProjectionMatrix();
+    
 }
 
 function onResize() {
     'use strict';
-    let viewSize = 100;
-    let aspectRatio = window.innerWidth / window.innerHeight;
+    //let viewSize = 100;
+    //let aspectRatio = window.innerWidth / window.innerHeight;
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+   /* renderer.setSize(window.innerWidth, window.innerHeight);
     
     camera.left = -aspectRatio*viewSize/2;
     camera.right = aspectRatio*viewSize/2;
     camera.top = viewSize/2;
     camera.bottom = -viewSize/2
-    camera.updateProjectionMatrix();
-    render();
+    camera.updateProjectionMatrix();*/
+    //render();
+    var aspect = window.innerWidth / window.innerHeight;
 
+
+    camera1.left   = - frustumSize * aspect / 2;
+    camera1.right  =   frustumSize * aspect / 2;
+    camera1.top    =   frustumSize / 2;
+    camera1.bottom = - frustumSize / 2;
+
+    camera1.updateProjectionMatrix();
+
+    camera2.left   = - frustumSize * aspect / 2;
+    camera2.right  =   frustumSize * aspect / 2;
+    camera2.top    =   frustumSize / 2;
+    camera2.bottom = - frustumSize / 2;
+
+    camera2.updateProjectionMatrix();
+
+    camera3.left   = - frustumSize * aspect / 2;
+    camera3.right  =   frustumSize * aspect / 2;
+    camera3.top    =   frustumSize / 2;
+    camera3.bottom = - frustumSize / 2;
+
+    camera3.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
 
@@ -91,22 +145,25 @@ function onKeyDown(e) {
         } );
         break;
     case 49:    //1
-        camera.position.x = 0;
+        cameraNumber = 1;
+        /*camera.position.x = 0;
         camera.position.y = 90;
         camera.position.z = 0;
-        camera.lookAt(scene.position);
+        camera.lookAt(scene.position);*/
         break;
     case 50:    //2
-        camera.position.x = 90;
+        cameraNumber = 2;
+        /*camera.position.x = 90;
         camera.position.y = 0;
         camera.position.z = 0;
-        camera.lookAt(scene.position);
+        camera.lookAt(scene.position);*/
         break;
     case 51:    //3
-        camera.position.x = 0;
+        cameraNumber = 3;
+        /*camera.position.x = 0;
         camera.position.y = 0;
         camera.position.z = 90;
-        camera.lookAt(scene.position);
+        camera.lookAt(scene.position);*/
         break;
     case 38: //UP
         breakU = false;
@@ -165,6 +222,21 @@ function onKeyUp(e){
     }
 }
 
+/*
+function checkCamera(){
+
+    if(cameraNumber == 1){
+        return camera1;
+    }
+
+    else if(cameraNumber == 2){
+        return camera2;
+    }
+
+    else{
+        return camera3;
+    }
+}*/
 
 
 function checkMove(){
@@ -205,7 +277,19 @@ function checkMove(){
 
 function render() {
     'use strict';
-    renderer.render(scene, camera);
+
+    if(cameraNumber == 1){
+        renderer.render(scene, camera1);
+    }
+
+    else if(cameraNumber == 2){
+        renderer.render(scene, camera2);
+    }
+
+    else{
+        renderer.render(scene, camera3);
+    }
+
 }
 
 function init() {
@@ -217,7 +301,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
    
     createScene();
-    createCamera();
+    createCameras();
     
     render();
     
